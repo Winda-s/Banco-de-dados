@@ -138,3 +138,37 @@ SELECT * FROM registro;
 
 SELECT * FROM logs_sistema;
 
+SELECT * FROM sensor_DHT11;
+
+SELECT * FROM sensor_LDR;
+
+
+-- Mudanças
+alter table logs_sistema drop constraint fk_logs_sistema_sensor;
+alter table logs_sistema drop column sensor_idSensor;
+truncate table sensor;
+
+alter table logs_sistema add column idSensor_DHT11 int;
+alter table logs_sistema add column idSensor_LDR int;
+
+create table sensor_DHT11 (
+idSensor_DHT11 int primary key auto_increment,
+id_quarto int
+);
+
+create table sensor_LDR (
+idSensor_LDR int primary key auto_increment,
+id_quarto int
+);
+
+alter table registro add column idSensor_DHT11 int;
+alter table registro add column idSensor_LDR int;
+
+alter table sensor_LDR add foreign key (id_quarto) references quarto(idQuarto);
+alter table sensor_DHT11 add foreign key (id_quarto) references quarto(idQuarto);
+
+alter table logs_sistema add foreign key (idSensor_DHT11) references sensor_DHT11(idSensor_DHT11);
+alter table logs_sistema add foreign key (idSensor_LDR) references sensor_LDR(idSensor_LDR);
+
+alter table registro add foreign key (idSensor_DHT11) references sensor_DHT11(idSensor_DHT11);
+alter table registro add foreign key (idSensor_LDR) references sensor_LDR(idSensor_LDR);
