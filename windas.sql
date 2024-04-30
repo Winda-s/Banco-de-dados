@@ -1,174 +1,138 @@
-Create database windas;
-use windas;
+DROP DATABASE windas;
+CREATE DATABASE windas;
+USE windas;
 
-CREATE TABLE endereco (
-  cep INT NOT NULL,
-  logradouro VARCHAR(100) NOT NULL,
-  numLogradouro VARCHAR(10) NOT NULL,
-  cidade VARCHAR(50) NOT NULL,
-  estado VARCHAR(50) NOT NULL,
-  bairro VARCHAR(50) NOT NULL,
-  PRIMARY KEY (cep)
-);
-CREATE TABLE cadastro (
-  idCadastro INT NOT NULL AUTO_INCREMENT,
+
+CREATE TABLE hotel (
+  idHotel INT AUTO_INCREMENT,
   nomeHotel VARCHAR(100) NOT NULL,
-  usuarioHotel VARCHAR(50) NOT NULL,
+  cnpj CHAR(18) NOT NULL,
+  usuarioHotel VARCHAR(50) NOT NULL, 
   emailHotel VARCHAR(100) NOT NULL,
-  senha VARCHAR(50) NOT NULL,
-  endereco_cep INT NOT NULL,
-  PRIMARY KEY (idCadastro),
+  senha VARCHAR(20) NOT NULL,
+  PRIMARY KEY (idHotel),
   UNIQUE (nomeHotel),
   UNIQUE (usuarioHotel),
   UNIQUE (emailHotel),
-  INDEX fk_cadastro_endereco_idx (endereco_cep),
-  CONSTRAINT fk_cadastro_endereco
-    FOREIGN KEY (endereco_cep)
-    REFERENCES endereco (cep)
+  UNIQUE (cnpj)
 );
 
-CREATE TABLE hotel (
-  idHotel INT NOT NULL AUTO_INCREMENT,
-  nomeFantasia VARCHAR(100) NOT NULL,
-  cnpj VARCHAR(20) NOT NULL,
-  endereco_cep INT NOT NULL,
-  PRIMARY KEY (idHotel),
-  UNIQUE (cnpj),
-  CONSTRAINT fk_hotel_endereco
-    FOREIGN KEY (endereco_cep)
-    REFERENCES endereco (cep)
+CREATE TABLE funcionario (
+idFuncionario INT PRIMARY KEY AUTO_INCREMENT,
+fk_gerente INT,
+nomeFuncionario VARCHAR(50) NOT NULL,
+usuarioFuncionario VARCHAR(50) NOT NULL, 
+emailFuncionario VARCHAR(100) NOT NULL,
+senha VARCHAR(20) NOT NULL,
+fk_hotel INT,
+CONSTRAINT fk_gerente FOREIGN KEY (fk_gerente) REFERENCES funcionario(idFuncionario), 
+CONSTRAINT fk_hotel FOREIGN KEY (fk_hotel) REFERENCES hotel(idHotel)
 );
+
 
 CREATE TABLE quarto (
     idQuarto INT NOT NULL AUTO_INCREMENT,
-    descricao VARCHAR(100) NULL,
-    andar VARCHAR(50) NULL,
-    ocupacao VARCHAR(10) NULL,
-    idHotel INT NULL,
+    numero INT NOT NULL,
+    andar VARCHAR(50) NOT NULL,
+    ocupacao VARCHAR(30) CHECK (ocupacao IN('Indisponível','Disponível')),
+    fk_hotel INT NOT NULL,
     PRIMARY KEY (idQuarto),
-    CONSTRAINT fk_quarto_hotel
-        FOREIGN KEY (idHotel)
-        REFERENCES hotel (idHotel)
+    CONSTRAINT fk_quarto_hotel FOREIGN KEY (fk_hotel) REFERENCES hotel(idHotel)
 );
 
-CREATE TABLE sensor (
-  idSensor INT NOT NULL AUTO_INCREMENT,
-  tipo VARCHAR(100) NOT NULL,
-  quarto_idQuarto INT NOT NULL,
-  PRIMARY KEY (idSensor),
-  CONSTRAINT fk_sensor_quarto
-    FOREIGN KEY (quarto_idQuarto)
-    REFERENCES quarto (idQuarto)
+CREATE TABLE sistema_sensor (
+  idSistema_sensor INT NOT NULL AUTO_INCREMENT,
+  tipo VARCHAR(100) CHECK (tipo IN('DHT11 e TCRT5000')),
+  fk_quarto INT NOT NULL,
+  PRIMARY KEY (idSistema_sensor),
+  CONSTRAINT fk_quarto FOREIGN KEY (fk_quarto) REFERENCES quarto(idQuarto)
 );
 
-CREATE TABLE registro (
-  idRegistro INT NOT NULL AUTO_INCREMENT,
-  leitura VARCHAR(100) NOT NULL,
-  dataHora DATETIME NOT NULL,
-  temperatura VARCHAR(50) NOT NULL,
-  umidade VARCHAR(50) NOT NULL,
+CREATE TABLE leitura (
+  idLeitura INT NOT NULL AUTO_INCREMENT,
+  dht11_temperatura VARCHAR(50) NOT NULL,
+  dht11_umidade VARCHAR(50) NOT NULL,
   proximidade VARCHAR(50) NOT NULL,
-  PRIMARY KEY (idRegistro)
+  dataHora DATETIME NOT NULL,
+  fk_sistema_sensor INT,
+  PRIMARY KEY (idLeitura),
+  CONSTRAINT fk_sistema_sensor FOREIGN KEY (fk_sistema_sensor) REFERENCES sistema_sensor(idSistema_sensor)
 );
 
-CREATE TABLE logs_sistema (
-  idLogs INT NOT NULL AUTO_INCREMENT,
-  falha_sensor VARCHAR(100) NULL,
-  sensor_idSensor INT NOT NULL,
-  dtHoraLog DATETIME NULL,
-  PRIMARY KEY (idLogs),
-  CONSTRAINT fk_logs_sistema_sensor
-    FOREIGN KEY (sensor_idSensor)
-    REFERENCES sensor (idSensor)
-);
 
-INSERT INTO endereco (cep, logradouro, numLogradouro, cidade, estado, bairro)
+
+INSERT INTO hotel (nomeHotel, cnpj, usuarioHotel, emailHotel, senha)
 VALUES 
-    (12345678, 'Rua das Flores', '100', 'São Paulo', 'SP', 'Jardim Paulista'),
-    (23456789, 'Avenida Brasil', '500', 'Rio de Janeiro', 'RJ', 'Copacabana'),
-    (34567890, 'Rua da Paz', '300', 'Belo Horizonte', 'MG', 'Savassi');
+    ('Ibis São Paulo', '12.345.678/0001-90','hotel_ibis_sp', 'ibissp@gmail.com','123@IbiS'),
+    ('Gran Villagio Hotel', '98.765.432/0001-21','hotel_gran','granvillagio@gmail.com','GranV56!789'),
+    ('Hotel Plaza', '11.223.344/0001-55','hotel_plaza', 'hotelplaza@hotmail.com', '3456Plaz%0');
 
-INSERT INTO cadastro (nomeHotel, usuarioHotel, emailHotel, senha, endereco_cep)
+
+INSERT INTO funcionario (fk_gerente, nomeFuncionario, usuarioFuncionario, emailFuncionario, senha, fk_hotel)
+VALUES (null,'Fernanda Menezes','fer_menezes','fernandamenezes@gmail.com','1258#f&r', 1),
+       (1,'Bruno Antunes','bruno.antunes','brunoantunes@gmail.com','8596%AnT',1),
+       (1,'Maria Santos','maria.s','mariasantos@gmail.com','$4253Sn',1),
+       (null,'Pedro Oliveira','pedro.oliveira','pedrooliveira@gmail.com','*12$Pd', 2),
+       (4,'Ana Lima','ana.lima','analima@gmail.com','&9@34AL',2),
+       (null,'Ricardo Silva','ricardo_silva','ricardosilva@gmail.com','@3Ric#',3),
+       (6,'Camila Pereira','camila.p','camilapereira@gmail.com','CaMi$%',3),
+       (6,'Carlos Vieira','carlos_vieira','carlosvieira@gmail.com','^76&CV',3);
+       
+       
+
+INSERT INTO quarto (numero, andar, ocupacao, fk_hotel)
 VALUES 
-    ('Hotel São Paulo', 'hotel_sp', 'contato@hotelsp.com', 'senha123', 12345678),
-    ('Hotel Rio', 'hotel_rio', 'contato@hotelrio.com', 'senha456', 23456789),
-    ('Hotel Minas', 'hotel_minas', 'contato@hotelminas.com', 'senha789', 34567890);
+    (125, '6º andar', 'Disponível', 1),
+    (252, '10º andar', 'Indisponível', 2),
+    (354, '15º andar', 'Disponível', 3);
 
-INSERT INTO hotel (nomeFantasia, cnpj, endereco_cep)
+INSERT INTO sistema_sensor (tipo, fk_quarto)
 VALUES 
-    ('Hotel Luxo Paulista', '12345678901234', 12345678),
-    ('Hotel Beira-Mar', '23456789012345', 23456789),
-    ('Hotel Charme Mineiro', '34567890123456', 34567890);
+    ('DHT11 e TCRT5000', 1),
+     ('DHT11 e TCRT5000', 2),
+   ('DHT11 e TCRT5000', 3);
+   
+   
 
-INSERT INTO quarto (descricao, andar, ocupacao, idHotel)
+
+INSERT INTO leitura ( dht11_temperatura, dht11_umidade, proximidade, dataHora, fk_sistema_sensor)
 VALUES 
-    ('Suíte Executiva', '5º andar', 'Disponível', 1),
-    ('Quarto Standard', '2º andar', 'Ocupado', 2),
-    ('Suíte Master', '10º andar', 'Disponível', 3);
+    ('25', '60', '1','2024-04-14 12:00:00', 1),
+    ( '23', '70', '0','2024-04-14 12:15:00',2),
+    ('22', '68', '1','2024-04-14 12:30:00',3);
 
-INSERT INTO sensor (tipo, quarto_idQuarto)
-VALUES 
-    ('Sensor de Temperatura', 1),
-    ('Sensor de Umidade', 2),
-    ('Sensor de Proximidade', 3);
-
-INSERT INTO registro (leitura, dataHora, temperatura, umidade, proximidade)
-VALUES 
-    ('Leitura 1', '2024-04-14 12:00:00', '25', '40', '1'),
-    ('Leitura 2', '2024-04-14 12:15:00', '23', '50', '0'),
-    ('Leitura 3', '2024-04-14 12:30:00', '22', '45', '1');
-
-INSERT INTO logs_sistema (falha_sensor, sensor_idSensor, dtHoraLog)
-VALUES 
-    ('Falha no sensor 1', 1, '2024-04-14 12:00:00'),
-    ('Falha no sensor 2', 2, '2024-04-14 12:15:00'),
-    ('Falha no sensor 3', 3, '2024-04-14 12:30:00');
-
-SELECT * FROM endereco;
-
-SELECT * FROM cadastro;
 
 SELECT * FROM hotel;
 
+SELECT * FROM funcionario;
+
 SELECT * FROM quarto;
 
-SELECT * FROM sensor;
+SELECT * FROM sistema_sensor;
 
-SELECT * FROM registro;
+SELECT * FROM leitura;
 
-SELECT * FROM logs_sistema;
+select hotel.nomeHotel,
+	   funcionario.*
+from hotel inner join funcionario on funcionario.fk_hotel = hotel.idHotel; 
 
-SELECT * FROM sensor_DHT11;
+select
+         h.idHotel,
+        h.nomeHotel as 'Nome Hotel',
+		gerente.idFuncionario as 'id Gerente',
+		gerente.nomeFuncionario as 'Gerente', 
+		funcio.idFuncionario as 'id Funcionario', 
+		funcio.nomeFuncionario as 'Funcionario' 
+from funcionario as gerente
+inner join funcionario as funcio on funcio.fk_gerente = gerente.idFuncionario
+inner join hotel as h on funcio.fk_hotel = h.idHotel;
 
-SELECT * FROM sensor_LDR;
+
+select hotel.nomeHotel,
+	   quarto.*,
+       leitura.*
+ from hotel inner join quarto on quarto.fk_hotel = hotel.idHotel
+ inner join sistema_sensor on sistema_sensor.fk_quarto = quarto.idQuarto
+ inner join leitura on leitura.fk_sistema_sensor = sistema_sensor.idSistema_sensor;
 
 
--- Mudanças
-alter table logs_sistema drop constraint fk_logs_sistema_sensor;
-alter table logs_sistema drop column sensor_idSensor;
-truncate table sensor;
-
-alter table logs_sistema add column idSensor_DHT11 int;
-alter table logs_sistema add column idSensor_LDR int;
-
-create table sensor_DHT11 (
-idSensor_DHT11 int primary key auto_increment,
-id_quarto int
-);
-
-create table sensor_LDR (
-idSensor_LDR int primary key auto_increment,
-id_quarto int
-);
-
-alter table registro add column idSensor_DHT11 int;
-alter table registro add column idSensor_LDR int;
-
-alter table sensor_LDR add foreign key (id_quarto) references quarto(idQuarto);
-alter table sensor_DHT11 add foreign key (id_quarto) references quarto(idQuarto);
-
-alter table logs_sistema add foreign key (idSensor_DHT11) references sensor_DHT11(idSensor_DHT11);
-alter table logs_sistema add foreign key (idSensor_LDR) references sensor_LDR(idSensor_LDR);
-
-alter table registro add foreign key (idSensor_DHT11) references sensor_DHT11(idSensor_DHT11);
-alter table registro add foreign key (idSensor_LDR) references sensor_LDR(idSensor_LDR);
