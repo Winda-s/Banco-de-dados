@@ -95,11 +95,9 @@ VALUES
    
 
 
-INSERT INTO leitura ( dht11_temperatura, dht11_umidade, proximidade, dataHora, fk_sistema_sensor)
-VALUES 
-    ('25', '60', '1','2024-04-14 12:00:00', 1),
-    ( '23', '70', '0','2024-04-14 12:15:00',2),
-    ('22', '68', '1','2024-04-14 12:30:00',3);
+/*INSERT INTO leitura ( dht11_temperatura, dht11_umidade, proximidade, dataHora, fk_sistema_sensor)
+VALUES */
+
 
 
 SELECT * FROM hotel;
