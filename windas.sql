@@ -33,7 +33,7 @@ CONSTRAINT fk_hotel FOREIGN KEY (fk_hotel) REFERENCES hotel(idHotel)
 CREATE TABLE quarto (
     idQuarto INT NOT NULL AUTO_INCREMENT,
     numero INT NOT NULL,
-    andar VARCHAR(50) NOT NULL,
+    andar VARCHAR(10) NOT NULL,
     ocupacao VARCHAR(30) CHECK (ocupacao IN('Indisponível','Disponível')),
     fk_hotel INT NOT NULL,
     PRIMARY KEY (idQuarto),
@@ -42,18 +42,18 @@ CREATE TABLE quarto (
 
 CREATE TABLE sistema_sensor (
   idSistema_sensor INT NOT NULL AUTO_INCREMENT,
-  tipo VARCHAR(100) CHECK (tipo IN('DHT11 e TCRT5000')),
+  tipo VARCHAR(50) CHECK (tipo IN('DHT11 e TCRT5000')),
   fk_quarto INT NOT NULL,
   PRIMARY KEY (idSistema_sensor),
   CONSTRAINT fk_quarto FOREIGN KEY (fk_quarto) REFERENCES quarto(idQuarto)
-);
+)auto_increment=10;
 
 CREATE TABLE leitura (
   idLeitura INT NOT NULL AUTO_INCREMENT,
-  dht11_temperatura VARCHAR(50) NOT NULL,
-  dht11_umidade VARCHAR(50) NOT NULL,
-  proximidade VARCHAR(50) NOT NULL,
-  dataHora DATETIME NOT NULL,
+  dht11_temperatura DECIMAL(4,2) NOT NULL,
+  dht11_umidade DECIMAL(4,2) NOT NULL,
+  proximidade CHAR(1) NOT NULL,
+  dataHora  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
   fk_sistema_sensor INT,
   PRIMARY KEY (idLeitura),
   CONSTRAINT fk_sistema_sensor FOREIGN KEY (fk_sistema_sensor) REFERENCES sistema_sensor(idSistema_sensor)
