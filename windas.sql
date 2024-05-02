@@ -54,7 +54,7 @@ CREATE TABLE leitura (
   dht11_umidade DECIMAL(4,2) NOT NULL,
   proximidade CHAR(1) NOT NULL,
   dataHora timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  fk_sistema_sensor INT,
+  fk_sistema_sensor INT NOT NULL,
   PRIMARY KEY (idLeitura),
   CONSTRAINT fk_sistema_sensor FOREIGN KEY (fk_sistema_sensor) REFERENCES sistema_sensor(idSistema_sensor)
 );
