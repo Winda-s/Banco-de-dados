@@ -46,16 +46,16 @@ CREATE TABLE sistema_sensor (
   fk_quarto INT NOT NULL,
   PRIMARY KEY (idSistema_sensor),
   CONSTRAINT fk_quarto FOREIGN KEY (fk_quarto) REFERENCES quarto(idQuarto)
-)auto_increment=10;
+);
 
 CREATE TABLE leitura (
   idLeitura INT NOT NULL AUTO_INCREMENT,
   dht11_temperatura DECIMAL(4,2) NOT NULL,
   dht11_umidade DECIMAL(4,2) NOT NULL,
   proximidade CHAR(1) NOT NULL,
-  dataHora  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  dataHora timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
   fk_sistema_sensor INT,
-  PRIMARY KEY (idLeitura),
+  PRIMARY KEY (idLeitura,fk_sistema_sensor),
   CONSTRAINT fk_sistema_sensor FOREIGN KEY (fk_sistema_sensor) REFERENCES sistema_sensor(idSistema_sensor)
 );
 
