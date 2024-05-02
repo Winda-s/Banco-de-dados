@@ -55,7 +55,7 @@ CREATE TABLE leitura (
   proximidade CHAR(1) NOT NULL,
   dataHora timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
   fk_sistema_sensor INT,
-  PRIMARY KEY (idLeitura,fk_sistema_sensor),
+  PRIMARY KEY (idLeitura),
   CONSTRAINT fk_sistema_sensor FOREIGN KEY (fk_sistema_sensor) REFERENCES sistema_sensor(idSistema_sensor)
 );
 
